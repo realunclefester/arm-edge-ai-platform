@@ -1,0 +1,114 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.tox/
+.nox/
+.coverage
+.pytest_cache/
+cover/
+htmlcov/
+.hypothesis/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Docker
+.dockerignore
+
+# Logs
+*.log
+logs/
+node_modules/
+
+# Database
+*.db
+*.sqlite3
+
+# Node-RED
+.config.runtime.json
+.sessions.json
+.config.users.json
+
+# Environment files
+.env.local
+.env.production
+*.env
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Security
+*.pem
+*.key
+*.crt
+id_rsa*
+id_ed25519*
+
+# Backups
+*.backup
+*.bak
+
+# Model cache
+models/
+*.model
+*.bin
+
+# Large data files
+data/
+datasets/
+
+# Personal notes
+notes.md
+TODO.md
+
+# Volume data (for local development)
+volumes/

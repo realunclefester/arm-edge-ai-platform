@@ -1,0 +1,151 @@
+services:
+  # PostgreSQL Database with pgvector
+  postgres:
+    build:
+      context: ./services/postgresql
+      dockerfile: Dockerfile
+    container_name: ai_platform_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ai_platform_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-ai_platform_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./services/postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    networks:
+      - ai_platform_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ai_platform_user}"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  # Embeddings Service - ARM-optimized sentence transformers
+  embeddings:
+    build:
+      context: ./services/embeddings
+      dockerfile: Dockerfile
+    container_name: ai_platform_embeddings
+    restart: unless-stopped
+    ports:
+      - "${EMBEDDINGS_PORT:-8001}:8001"
+    networks:
+      - ai_platform_network
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - MODEL_CACHE_DIR=/app/models
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 1m
+      timeout: 3s
+      retries: 3
+
+  # Analytics Service - Vector analysis and clustering
+  analytics:
+    build:
+      context: ./services/analytics
+      dockerfile: Dockerfile
+    container_name: ai_platform_analytics
+    restart: unless-stopped
+    ports:
+      - "${ANALYTICS_PORT:-8002}:8002"
+    networks:
+      - ai_platform_network
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 1m
+      timeout: 3s
+      retries: 3
+
+  # Log Aggregator - Intelligent log processing
+  log-aggregator:
+    build:
+      context: ./services/log-aggregator
+      dockerfile: Dockerfile
+    container_name: ai_platform_log_aggregator
+    restart: unless-stopped
+    ports:
+      - "${LOG_AGGREGATOR_PORT:-8004}:8004"
+    networks:
+      - ai_platform_network
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 1m
+      timeout: 3s
+      retries: 3
+
+  # Plotly Visualization - Interactive dashboards
+  plotly-viz:
+    build:
+      context: ./services/plotly-viz
+      dockerfile: Dockerfile
+    container_name: ai_platform_plotly
+    restart: unless-stopped
+    ports:
+      - "${PLOTLY_PORT:-8003}:8003"
+    networks:
+      - ai_platform_network
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/"]
+      interval: 1m
+      timeout: 3s
+      retries: 3
+
+  # Node-RED - Workflow automation
+  node-red:
+    image: nodered/node-red:latest
+    container_name: ai_platform_node_red
+    restart: unless-stopped
+    ports:
+      - "${NODE_RED_PORT:-1880}:1880"
+    networks:
+      - ai_platform_network
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - node_red_data:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1880/"]
+      interval: 1m
+      timeout: 3s
+      retries: 3
+
+networks:
+  ai_platform_network:
+    driver: bridge
+    name: ai_platform_network
+
+volumes:
+  postgres_data:
+    name: ai_platform_postgres_data
+  node_red_data:
+    name: ai_platform_node_red_data
