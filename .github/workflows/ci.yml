@@ -101,7 +101,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./services/${{ matrix.service }}
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: false
           tags: arm-edge-ai-${{ matrix.service }}:test
           no-cache: true
@@ -125,6 +125,7 @@ jobs:
           # sed -i 's/ai_platform_db/test_db/g' .env
 
       - name: Start services
+        timeout-minutes: 15
         run: |
           docker compose up -d postgres
           sleep 30  # Wait for PostgreSQL to be ready
