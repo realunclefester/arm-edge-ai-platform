@@ -256,44 +256,4 @@ jobs:
         if: always()
         run: docker compose down -v
 
-  release:
-    name: Create Release
-    runs-on: ubuntu-latest
-    needs: [lint-and-validate, security-scan, docker-build,
-            integration-test, documentation-check]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' &&
-        contains(github.event.head_commit.message, '[release]')
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Generate release notes
-        id: release_notes
-        run: |
-          echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
-          echo "## ARM Edge AI Platform Release" >> $GITHUB_OUTPUT
-          echo "" >> $GITHUB_OUTPUT
-          echo "### Changes in this release:" >> $GITHUB_OUTPUT
-          echo "${{ github.event.head_commit.message }}" >> $GITHUB_OUTPUT
-          echo "" >> $GITHUB_OUTPUT
-          echo "### Services included:" >> $GITHUB_OUTPUT
-          echo "- Embeddings Service (ARM-optimized)" >> $GITHUB_OUTPUT
-          echo "- Analytics Engine" >> $GITHUB_OUTPUT
-          echo "- Log Aggregator" >> $GITHUB_OUTPUT
-          echo "- Plotly Visualization" >> $GITHUB_OUTPUT
-          echo "- PostgreSQL + pgvector" >> $GITHUB_OUTPUT
-          echo "- Node-RED Automation" >> $GITHUB_OUTPUT
-          echo "- MCP Servers for Claude Code" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.run_number }}
-          name: ARM Edge AI Platform v${{ github.run_number }}
-          body: ${{ steps.release_notes.outputs.RELEASE_NOTES }}
-          draft: false
-          prerelease: false
+  # Release job removed - releases are now created manually via GitHub UI
