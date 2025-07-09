@@ -118,7 +118,7 @@ graph TB
   - 384-dimensional vector storage
   - Similarity search with pgvector
   - Event queue system (polling-based)
-  - HTTP-ready with pg_net extension (available for future use)
+  - HTTP-ready with pg_net extension
 
 #### 6. Node-RED Automation (Port 1880)
 - **Technology**: Node-RED with custom nodes
@@ -206,7 +206,7 @@ Input Text → Embeddings Service → pgvector Storage → Memory Server → Con
 - **SSH**: Port 22 (key-based authentication only)
 - **Tailscale VPN**: Secure remote access
 - **Service Ports**: 1880, 5432, 8001-8004
-- **Network Security**: iptables configuration (planned)
+- **Network Security**: iptables configuration
 
 ## Resource Management
 
