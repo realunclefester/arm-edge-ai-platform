@@ -40,7 +40,6 @@ This platform showcases modern edge AI infrastructure combining machine learning
 │  │    • Event queue system (polling-based)                 ││
 │  │    • Analytics results                                  ││ 
 │  │    • Persistent memory                                  ││
-│  │    * pg_net installed but not actively used             ││ 
 │  └─────────────────────────────────────────────────────────┘│
 └─────────────────────────────────────────────────────────────┘
 ```
